@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les couleurs</title>
+<style>
+  :root {
+    --bg1: #fff7d6;
+    --bg2: #d9f2ff;
+    --ink: #2b2d42;
+    --card: #ffffff;
+    --accent: #ff7a00;
+    --ok: #2ecc71;
+    --select: #3a86ff;
+    --gap: clamp(8px, 1.6vmin, 18px);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Comic Sans MS", "Chalkboard SE", "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, var(--bg1), var(--bg2));
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: max(10px, env(safe-area-inset-top)) 16px max(10px, env(safe-area-inset-bottom));
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  header { text-align: center; }
+  h1 {
+    margin: 0;
+    font-size: clamp(28px, 6vmin, 64px);
+    letter-spacing: 1px;
+  }
+  h1 span:nth-child(7n+1) { color: #e63946; }
+  h1 span:nth-child(7n+2) { color: #3a86ff; }
+  h1 span:nth-child(7n+3) { color: #f4a300; }
+  h1 span:nth-child(7n+4) { color: #2a9d4b; }
+  h1 span:nth-child(7n+5) { color: #ff7a00; }
+  h1 span:nth-child(7n+6) { color: #ff5fa2; }
+  h1 span:nth-child(7n+7) { color: #8e44ad; }
+  .instructions {
+    margin: 4px auto 10px;
+    font-size: clamp(18px, 3.4vmin, 36px);
+    font-weight: bold;
+    background: var(--card);
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 999px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.08);
+  }
+
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: calc(var(--gap) * 2);
+    width: 100%;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+  .panel {
+    background: rgba(255,255,255,.55);
+    border-radius: 24px;
+    padding: var(--gap);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 1fr;
+    gap: var(--gap);
+  }
+  /* Portrait phones/tablets: one column per side. Squarer screens: 2 across.
+     Wide screens (landscape tablets, smartboards): 4 across. */
+  @media (min-aspect-ratio: 3/4) {
+    .panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-aspect-ratio: 4/3) {
+    .panel { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    border: none;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .item {
+    position: relative;
+    border-radius: 20px;
+    background: var(--card);
+    min-height: 64px;
+    container-type: size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 0 rgba(0,0,0,.12);
+    transition: transform .12s, box-shadow .12s, opacity .3s;
+  }
+  .item:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.12); }
+  .item.selected {
+    outline: 6px solid var(--select);
+    outline-offset: 2px;
+    transform: scale(1.05);
+  }
+  .item.matched {
+    opacity: .45;
+    pointer-events: none;
+    box-shadow: none;
+  }
+  .item.matched::after {
+    content: "✓";
+    position: absolute;
+    top: 4px; right: 8px;
+    color: var(--ok);
+    font-size: clamp(22px, 4vmin, 42px);
+    font-weight: bold;
+  }
+  .item.wrong { animation: shake .4s; }
+  .item.pop { animation: pop .45s; }
+
+  .dot {
+    width: min(80cqw, 80cqh);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 4px solid rgba(0,0,0,.15);
+  }
+  .word {
+    font-size: clamp(16px, min(23cqw, 45cqh), 80px);
+    font-weight: bold;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-7px); }
+    80% { transform: translateX(7px); }
+  }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  /* Bravo screen */
+  #bravo {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+    background: rgba(255, 247, 214, .92);
+    z-index: 10;
+    text-align: center;
+    padding: 16px;
+  }
+  #bravo.show { display: flex; }
+  #bravo h2 {
+    margin: 0;
+    font-size: clamp(56px, 16vmin, 180px);
+    color: var(--accent);
+    text-shadow: 0 6px 0 rgba(0,0,0,.1);
+    animation: pop .8s infinite;
+  }
+  .stars { font-size: clamp(40px, 10vmin, 110px); }
+  #replay {
+    font-size: clamp(28px, 6vmin, 64px);
+    font-weight: bold;
+    background: var(--ok);
+    color: #fff;
+    padding: .4em 1.2em;
+    border-radius: 999px;
+    box-shadow: 0 8px 0 #1e9c55;
+  }
+  #replay:active { transform: translateY(4px); box-shadow: 0 4px 0 #1e9c55; }
+
+  .confetti {
+    position: fixed;
+    top: -20px;
+    width: 14px;
+    height: 20px;
+    border-radius: 3px;
+    z-index: 11;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #bravo h2, .item.wrong, .item.pop { animation: none; }
+    .confetti { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1><span>L</span><span>e</span><span>s</span> <span>c</span><span>o</span><span>u</span><span>l</span><span>e</span><span>u</span><span>r</span><span>s</span></h1>
+    <div class="instructions">👆 Touche une couleur, puis son mot.</div>
+  </header>
+
+  <main>
+    <section class="panel" id="colours" aria-label="Couleurs"></section>
+    <section class="panel" id="words" aria-label="Mots"></section>
+  </main>
+
+  <div id="bravo" role="dialog" aria-live="polite">
+    <div class="stars">⭐🌈⭐</div>
+    <h2>Bravo !</h2>
+    <button id="replay">🔄 Rejouer</button>
+  </div>
+
+<script>
+  const COLOURS = [
+    { word: "rouge",  hex: "#e63946" },
+    { word: "bleu",   hex: "#1e6fff" },
+    { word: "jaune",  hex: "#ffd60a" },
+    { word: "vert",   hex: "#2a9d4b" },
+    { word: "orange", hex: "#ff7a00" },
+    { word: "rose",   hex: "#ff8fc7" },
+    { word: "violet", hex: "#8e44ad" },
+    { word: "noir",   hex: "#111111" },
+  ];
+
+  const coloursEl = document.getElementById("colours");
+  const wordsEl = document.getElementById("words");
+  const bravoEl = document.getElementById("bravo");
+
+  let selected = null;   // the button currently picked (colour or word)
+  let matchedCount = 0;
+
+  // ---------- Speech ----------
+  let frVoice = null;
+  function pickVoice() {
+    if (!("speechSynthesis" in window)) return;
+    const voices = speechSynthesis.getVoices();
+    frVoice = voices.find(v => v.lang === "fr-FR")
+           || voices.find(v => v.lang && v.lang.toLowerCase().startsWith("fr"))
+           || null;
+  }
+  if ("speechSynthesis" in window) {
+    pickVoice();
+    speechSynthesis.onvoiceschanged = pickVoice;
+  }
+  function say(text) {
+    if (!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "fr-FR";
+    if (frVoice) u.voice = frVoice;
+    u.rate = 0.85;
+    speechSynthesis.speak(u);
+  }
+
+  // ---------- Sounds ----------
+  let audioCtx = null;
+  function tone(freq, start, dur, type = "sine", vol = 0.2) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const t = audioCtx.currentTime + start;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+  }
+  function playSound(kind) {
+    try {
+      if (kind === "match") {
+        tone(660, 0, 0.15); tone(880, 0.1, 0.25);
+      } else if (kind === "wrong") {
+        tone(220, 0, 0.25, "triangle", 0.15);
+      } else if (kind === "win") {
+        [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, i * 0.13, 0.3, "triangle", 0.25));
+      }
+    } catch (e) { /* audio not available */ }
+  }
+
+  // ---------- Game ----------
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function build() {
+    coloursEl.innerHTML = "";
+    wordsEl.innerHTML = "";
+    selected = null;
+    matchedCount = 0;
+
+    shuffle(COLOURS).forEach(c => {
+      const b = document.createElement("button");
+      b.className = "item";
+      b.dataset.word = c.word;
+      b.dataset.side = "colour";
+      b.setAttribute("aria-label", "une couleur");
+      const dot = document.createElement("span");
+      dot.className = "dot";
+      dot.style.background = c.hex;
+      b.appendChild(dot);
+      b.addEventListener("click", () => choose(b));
+      coloursEl.appendChild(b);
+    });
+
+    shuffle(COLOURS).forEach(c => {
+      const b = document.createElement("button");
+      b.className = "item";
+      b.dataset.word = c.word;
+      b.dataset.side = "word";
+      const span = document.createElement("span");
+      span.className = "word";
+      span.textContent = c.word;
+      b.appendChild(span);
+      b.addEventListener("click", () => { say(c.word); choose(b); });
+      wordsEl.appendChild(b);
+    });
+  }
+
+  function choose(btn) {
+    // First pick, or switching pick on the same side
+    if (!selected || selected.dataset.side === btn.dataset.side) {
+      if (selected) selected.classList.remove("selected");
+      selected = btn;
+      btn.classList.add("selected");
+      return;
+    }
+
+    const other = selected;
+    other.classList.remove("selected");
+    selected = null;
+
+    if (other.dataset.word === btn.dataset.word) {
+      [other, btn].forEach(el => {
+        el.classList.add("matched", "pop");
+        el.setAttribute("aria-disabled", "true");
+      });
+      playSound("match");
+      matchedCount++;
+      if (matchedCount === COLOURS.length) setTimeout(win, 700);
+    } else {
+      playSound("wrong");
+      [other, btn].forEach(el => {
+        el.classList.remove("wrong");
+        void el.offsetWidth; // restart animation
+        el.classList.add("wrong");
+      });
+    }
+  }
+
+  function win() {
+    bravoEl.classList.add("show");
+    playSound("win");
+    setTimeout(() => say("Bravo !"), 600);
+    confetti();
+  }
+
+  function confetti() {
+    const colours = COLOURS.map(c => c.hex);
+    for (let i = 0; i < 80; i++) {
+      const p = document.createElement("div");
+      p.className = "confetti";
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.background = colours[i % colours.length];
+      p.style.animationDuration = 2 + Math.random() * 2 + "s";
+      p.style.animationDelay = Math.random() * 0.8 + "s";
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 5000);
+    }
+  }
+
+  document.getElementById("replay").addEventListener("click", () => {
+    bravoEl.classList.remove("show");
+    document.querySelectorAll(".confetti").forEach(p => p.remove());
+    build();
+  });
+
+  build();
+</script>
+</body>
+</html>
