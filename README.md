@@ -13,13 +13,11 @@ Each day has its own colour and picture: lundi 🌙, mardi 🚀, mercredi ⭐, j
 - **Niveau 2 – Mets en ordre:** the days are mixed up; tap or drag them into the week, starting with lundi.
 - **Niveau 3 – Quel jour ?:** 10 questions like "Quel jour vient après mardi ?", read aloud, with 3 answers and a score out of 10.
 
-Both games work on phones, tablets and classroom smartboards.
-
-It works on phones, tablets and classroom smartboards. It needs no internet connection after the page has loaded.
+Both games work on phones, tablets and classroom smartboards. They need no internet connection after the page has loaded.
 
 ## Open the game from a link (GitHub Pages)
 
-1. On GitHub, open this repository and make sure `index.html` is on the **main** branch
+1. On GitHub, open this repository and make sure `index.html` and `jours.html` are on the **main** branch
    (merge this branch into `main` first if needed).
 2. Click **Settings** (top of the repository page).
 3. In the left menu, click **Pages**.
