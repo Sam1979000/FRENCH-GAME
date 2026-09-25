@@ -18,7 +18,7 @@ It works on phones, tablets and classroom smartboards. It needs no internet conn
 
    `https://<your-username>.github.io/<repository-name>/`
 
-   For this repository it will be: **https://sam1979000.github.io/french-game/**
+   For this repository it will be: **https://sam1979000.github.io/FRENCH-GAME/**
 
 Open that link on any device, or share it with students. Tip: bookmark it on the smartboard or
 "Add to Home Screen" on a tablet so it opens like an app.
