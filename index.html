@@ -52,6 +52,22 @@
     box-shadow: 0 3px 0 rgba(0,0,0,.08);
   }
 
+  .gamelink {
+    display: inline-block;
+    margin: 4px 8px 10px;
+    font-size: clamp(18px, 3.4vmin, 36px);
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    background: linear-gradient(90deg, #e63946, #f76707, #2a9d4b, #1e88e5, #7b4ce0);
+    padding: 6px 22px;
+    border-radius: 999px;
+    box-shadow: 0 5px 0 rgba(0,0,0,.18);
+    text-shadow: 0 2px 0 rgba(0,0,0,.2);
+    touch-action: manipulation;
+  }
+  .gamelink:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+
   main {
     flex: 1;
     display: grid;
@@ -202,6 +218,7 @@
   <header>
     <h1><span>L</span><span>e</span><span>s</span> <span>c</span><span>o</span><span>u</span><span>l</span><span>e</span><span>u</span><span>r</span><span>s</span></h1>
     <div class="instructions">👆 Touche une couleur, puis son mot.</div>
+    <a class="gamelink" href="jours.html">📅 Les jours de la semaine ➜</a>
   </header>
 
   <main>

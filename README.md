@@ -4,6 +4,17 @@ A simple matching game in one file, `index.html`. Children tap a coloured circle
 (rouge, bleu, jaune, vert, orange, rose, violet, noir). Each word is read aloud in French when tapped.
 When all 8 pairs are matched, a happy sound plays and "Bravo !" appears, with a **Rejouer** button that shuffles the game.
 
+## Les jours de la semaine – French days game (Grade 1–2)
+
+A second game in `jours.html` (open it from the big **📅 Les jours de la semaine** button on the colours page).
+Each day has its own colour and picture: lundi 🌙, mardi 🚀, mercredi ⭐, jeudi ⚡, vendredi 💖, samedi 🪐, dimanche ☀️.
+
+- **Niveau 1 – Écoute:** the 7 days in order; tap a card to hear it, or tap **Écoute tous les jours**.
+- **Niveau 2 – Mets en ordre:** the days are mixed up; tap or drag them into the week, starting with lundi.
+- **Niveau 3 – Quel jour ?:** 10 questions like "Quel jour vient après mardi ?", read aloud, with 3 answers and a score out of 10.
+
+Both games work on phones, tablets and classroom smartboards.
+
 It works on phones, tablets and classroom smartboards. It needs no internet connection after the page has loaded.
 
 ## Open the game from a link (GitHub Pages)

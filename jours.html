@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les jours de la semaine</title>
+<style>
+  :root {
+    --bg1: #fff7d6;
+    --bg2: #d9f2ff;
+    --ink: #2b2d42;
+    --card: #ffffff;
+    --accent: #ff7a00;
+    --ok: #2ecc71;
+    --try: #ff8fa3;
+    --select: #3a86ff;
+    --gap: clamp(8px, 1.6vmin, 18px);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Comic Sans MS", "Chalkboard SE", "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, var(--bg1), var(--bg2)) fixed;
+    min-height: 100vh;
+    padding: max(10px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  button, a.btn {
+    font: inherit;
+    color: inherit;
+    border: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    text-decoration: none;
+  }
+
+  /* ---------- Header ---------- */
+  header { text-align: center; position: relative; }
+  .home {
+    position: absolute;
+    left: 0; top: 0;
+    font-size: clamp(14px, 2.4vmin, 24px);
+    font-weight: bold;
+    background: var(--card);
+    padding: 6px 14px;
+    border-radius: 999px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.1);
+  }
+  h1 {
+    margin: 0;
+    padding: 0 clamp(90px, 14vmin, 170px);
+    font-size: clamp(26px, 5.6vmin, 60px);
+    letter-spacing: 1px;
+    line-height: 1.15;
+  }
+  @media (max-width: 600px) {
+    .home { position: static; display: inline-block; margin-bottom: 6px; }
+    h1 { padding: 0; }
+    nav { gap: 6px; }
+    nav button { font-size: 16px; padding: .4em .7em; min-height: 48px; }
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap);
+    margin: 10px 0;
+  }
+  nav button {
+    font-size: clamp(18px, 3.2vmin, 34px);
+    font-weight: bold;
+    background: var(--card);
+    padding: .4em .9em;
+    border-radius: 999px;
+    box-shadow: 0 5px 0 rgba(0,0,0,.12);
+    min-height: 56px;
+  }
+  nav button[aria-pressed="true"] {
+    background: var(--select);
+    color: #fff;
+    box-shadow: 0 5px 0 #1f5fc9;
+  }
+  nav button:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.12); }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap);
+    margin-bottom: 12px;
+  }
+  .instructions {
+    font-size: clamp(18px, 3.2vmin, 34px);
+    font-weight: bold;
+    background: var(--card);
+    padding: 6px 18px;
+    border-radius: 999px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.08);
+    text-align: center;
+  }
+  .action {
+    font-size: clamp(18px, 3vmin, 32px);
+    font-weight: bold;
+    background: var(--ok);
+    color: #fff;
+    padding: .35em 1em;
+    border-radius: 999px;
+    box-shadow: 0 5px 0 #1e9c55;
+    min-height: 52px;
+  }
+  .action.orange { background: var(--accent); box-shadow: 0 5px 0 #c45e00; }
+  .action:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.2); }
+
+  main { max-width: 1600px; margin: 0 auto; }
+
+  /* ---------- Rows of day cards ---------- */
+  .row {
+    --cols: 3;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap);
+  }
+  .row > * { width: calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); }
+  .row.l2 { --cols: 4; }
+  @media (min-aspect-ratio: 3/4) { .row { --cols: 4; } }
+  @media (min-aspect-ratio: 4/3) { .row, .row.l2 { --cols: 7; } }
+
+  .day {
+    position: relative;
+    background: var(--c);
+    color: var(--ink2, #fff);
+    border-radius: 22px;
+    aspect-ratio: 4 / 5;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4%;
+    box-shadow: 0 6px 0 rgba(0,0,0,.18), inset 0 -6px 0 rgba(0,0,0,.08);
+    transition: transform .12s, box-shadow .12s, opacity .2s;
+  }
+  .row.l2 .day, .slot { aspect-ratio: 1 / 1; }
+  button.day:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+  .day .emo { font-size: clamp(28px, 34cqi, 110px); line-height: 1; }
+  .day .name {
+    font-size: clamp(14px, 17cqi, 52px);
+    font-weight: bold;
+    text-shadow: 0 2px 0 rgba(0,0,0,.18);
+  }
+  .day.light .name { text-shadow: none; }
+  .day.heard::after {
+    content: "✓";
+    position: absolute;
+    top: 4px; right: 10px;
+    font-size: clamp(18px, 16cqi, 44px);
+    font-weight: bold;
+  }
+  .day.lit { transform: scale(1.08); outline: 6px solid var(--select); outline-offset: 3px; }
+
+  /* Level 2 */
+  .zone-title {
+    text-align: center;
+    font-size: clamp(16px, 2.6vmin, 28px);
+    font-weight: bold;
+    margin: 4px 0 8px;
+    opacity: .75;
+  }
+  .slots { margin-bottom: 18px; }
+  .slot {
+    position: relative;
+    border-radius: 22px;
+    border: 4px dashed rgba(43,45,66,.3);
+    background: rgba(255,255,255,.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slot .num {
+    font-size: clamp(28px, 7vmin, 80px);
+    font-weight: bold;
+    opacity: .3;
+  }
+  .slot.next { border-color: var(--select); border-style: solid; animation: pulse 1.2s infinite; }
+  .slot.over { background: #cfe0ff; border-color: var(--select); border-style: solid; }
+  .slot.filled { border: none; background: none; animation: none; }
+  .slot.filled .day { width: 100%; height: 100%; aspect-ratio: auto; }
+  .pool .day { touch-action: none; }
+  .day.dragging { opacity: .3; }
+  .ghost {
+    position: fixed;
+    z-index: 20;
+    pointer-events: none;
+    transform: scale(1.08) rotate(-3deg);
+    box-shadow: 0 16px 30px rgba(0,0,0,.3);
+  }
+
+  /* Level 3 */
+  .status {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--gap);
+    font-size: clamp(18px, 3vmin, 32px);
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .status span {
+    background: var(--card);
+    padding: 4px 16px;
+    border-radius: 999px;
+  }
+  .question {
+    background: var(--card);
+    border-radius: 28px;
+    padding: clamp(12px, 2.4vmin, 28px);
+    box-shadow: 0 6px 0 rgba(0,0,0,.08);
+    text-align: center;
+    max-width: 1100px;
+    margin: 0 auto 18px;
+  }
+  .question .text {
+    font-size: clamp(24px, 5vmin, 60px);
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .question .text b { color: var(--select); text-decoration: underline; text-underline-offset: 6px; }
+  .chip {
+    background: var(--c);
+    color: var(--ink2, #fff);
+    padding: 0 .35em;
+    border-radius: 14px;
+    white-space: nowrap;
+  }
+  .strip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap);
+  }
+  .strip .day, .strip .mystery { width: clamp(90px, 18vmin, 200px); aspect-ratio: 1 / 1; }
+  .strip .arrow { font-size: clamp(32px, 7vmin, 80px); }
+  .mystery {
+    border-radius: 22px;
+    border: 4px dashed rgba(43,45,66,.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(44px, 10vmin, 110px);
+    font-weight: bold;
+    color: rgba(43,45,66,.45);
+  }
+  .row.answers { --cols: 3; max-width: 1100px; margin: 0 auto; }
+  .answers .day { aspect-ratio: 5 / 4; }
+  .day.no { opacity: .35; pointer-events: none; }
+  .day.yes { outline: 8px solid var(--ok); outline-offset: 3px; }
+
+  /* ---------- Feedback ---------- */
+  #toast {
+    position: fixed;
+    left: 50%;
+    bottom: 6vh;
+    transform: translate(-50%, 40px);
+    opacity: 0;
+    z-index: 15;
+    font-size: clamp(30px, 7vmin, 80px);
+    font-weight: bold;
+    padding: .2em .9em;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--ok);
+    box-shadow: 0 8px 0 rgba(0,0,0,.15);
+    pointer-events: none;
+    white-space: nowrap;
+    transition: opacity .2s, transform .2s;
+  }
+  #toast.try { background: var(--try); }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .wrong { animation: shake .4s; }
+  .pop { animation: pop .45s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-7px); }
+    80% { transform: translateX(7px); }
+  }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(58,134,255,.5); }
+    50% { box-shadow: 0 0 0 10px rgba(58,134,255,0); }
+  }
+
+  /* Bravo screen */
+  #bravo {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    background: rgba(255, 247, 214, .94);
+    z-index: 10;
+    text-align: center;
+    padding: 16px;
+  }
+  #bravo.show { display: flex; }
+  #bravo h2 {
+    margin: 0;
+    font-size: clamp(56px, 16vmin, 180px);
+    color: var(--accent);
+    text-shadow: 0 6px 0 rgba(0,0,0,.1);
+    animation: pop .8s infinite;
+  }
+  #bravoMsg { margin: 0; font-size: clamp(22px, 5vmin, 56px); font-weight: bold; }
+  .stars { font-size: clamp(40px, 10vmin, 110px); }
+  .bravo-buttons { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+  .bravo-buttons .action { font-size: clamp(24px, 5vmin, 56px); padding: .4em 1.1em; }
+
+  .confetti {
+    position: fixed;
+    top: -20px;
+    width: 14px;
+    height: 20px;
+    border-radius: 3px;
+    z-index: 11;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #bravo h2, .wrong, .pop, .slot.next { animation: none; }
+    .confetti { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <a class="btn home" href="index.html">🎨 Les couleurs</a>
+    <h1 id="title">Les jours de la semaine</h1>
+    <nav aria-label="Niveaux">
+      <button data-level="1">1 · 🔊 Écoute</button>
+      <button data-level="2">2 · 🔢 Mets en ordre</button>
+      <button data-level="3">3 · ❓ Quel jour ?</button>
+    </nav>
+    <div class="bar">
+      <div class="instructions" id="instr"></div>
+      <span id="actions" class="bar" style="margin:0"></span>
+    </div>
+  </header>
+
+  <main id="stage"></main>
+
+  <div id="toast" aria-live="polite"></div>
+
+  <div id="bravo" role="dialog" aria-live="polite">
+    <div class="stars" id="stars">⭐🌈⭐</div>
+    <h2>Bravo !</h2>
+    <p id="bravoMsg"></p>
+    <div class="bravo-buttons">
+      <button class="action" id="replay">🔄 Rejouer</button>
+      <button class="action orange" id="next">➡️ Niveau suivant</button>
+    </div>
+  </div>
+
+<script>
+  const DAYS = [
+    { name: "lundi",    color: "#e63946", emoji: "🌙" },
+    { name: "mardi",    color: "#f76707", emoji: "🚀" },
+    { name: "mercredi", color: "#ffc300", emoji: "⭐", light: true },
+    { name: "jeudi",    color: "#2a9d4b", emoji: "⚡" },
+    { name: "vendredi", color: "#1e88e5", emoji: "💖" },
+    { name: "samedi",   color: "#7b4ce0", emoji: "🪐" },
+    { name: "dimanche", color: "#ff5fa2", emoji: "☀️" },
+  ];
+  DAYS.forEach((d, i) => d.i = i);
+
+  const stage = document.getElementById("stage");
+  const instrEl = document.getElementById("instr");
+  const actionsEl = document.getElementById("actions");
+  const toastEl = document.getElementById("toast");
+  const bravoEl = document.getElementById("bravo");
+
+  // Colourful title: one day colour per letter
+  (function () {
+    const title = document.getElementById("title");
+    let n = 0;
+    title.innerHTML = "";
+    for (const ch of "Les jours de la semaine") {
+      const s = document.createElement("span");
+      s.textContent = ch;
+      if (ch !== " ") {
+        const d = DAYS[n++ % DAYS.length];
+        s.style.color = d.light ? "#e0a800" : d.color;  // darker yellow reads better on the light background
+      }
+      title.appendChild(s);
+    }
+  })();
+
+  // ---------- Speech ----------
+  let frVoice = null;
+  function pickVoice() {
+    if (!("speechSynthesis" in window)) return;
+    const voices = speechSynthesis.getVoices();
+    frVoice = voices.find(v => v.lang === "fr-FR")
+           || voices.find(v => v.lang && v.lang.toLowerCase().replace("_", "-").startsWith("fr"))
+           || null;
+  }
+  if ("speechSynthesis" in window) {
+    pickVoice();
+    speechSynthesis.onvoiceschanged = pickVoice;
+  }
+  function say(text) {
+    if (!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "fr-FR";
+    if (frVoice) u.voice = frVoice;
+    u.rate = 0.85;
+    speechSynthesis.speak(u);
+  }
+
+  // ---------- Sounds ----------
+  let audioCtx = null;
+  function tone(freq, start, dur, type = "sine", vol = 0.2) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const t = audioCtx.currentTime + start;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+  }
+  function playSound(kind) {
+    try {
+      if (kind === "good") {
+        tone(660, 0, 0.15); tone(880, 0.1, 0.18); tone(1320, 0.2, 0.3);
+      } else if (kind === "try") {
+        tone(392, 0, 0.25, "triangle", 0.12); tone(330, 0.2, 0.35, "triangle", 0.12);
+      } else if (kind === "win") {
+        [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, i * 0.13, 0.3, "triangle", 0.25));
+      }
+    } catch (e) { /* audio not available */ }
+  }
+
+  // ---------- Helpers ----------
+  let timers = [];
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function dayCard(d, tag = "button") {
+    const c = el(tag, "day" + (d.light ? " light" : ""));
+    c.style.setProperty("--c", d.color);
+    if (d.light) c.style.setProperty("--ink2", "#2b2d42");
+    c.dataset.i = d.i;
+    c.append(el("span", "emo", d.emoji), el("span", "name", d.name));
+    return c;
+  }
+  function chip(d) {
+    const s = el("span", "chip", d.name);
+    s.style.setProperty("--c", d.color);
+    if (d.light) s.style.setProperty("--ink2", "#2b2d42");
+    return s;
+  }
+  function animate(node, cls) {
+    node.classList.remove(cls);
+    void node.offsetWidth; // restart animation
+    node.classList.add(cls);
+  }
+  function actionButton(label, onClick, cls = "action") {
+    const b = el("button", cls, label);
+    b.addEventListener("click", onClick);
+    actionsEl.appendChild(b);
+    return b;
+  }
+
+  let toastTimer = null;
+  function toast(text, kind) {
+    toastEl.textContent = text;
+    toastEl.className = (kind === "try" ? "try " : "") + "show";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1300);
+  }
+  function good(text = "Bravo ! 👍") { toast(text, "good"); playSound("good"); }
+  function tryAgain() { toast("Essaie encore ! 🙂", "try"); playSound("try"); say("Essaie encore !"); }
+
+  // ---------- Levels ----------
+  let level = 1;
+  function setLevel(n) {
+    level = n;
+    clearTimers();
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    bravoEl.classList.remove("show");
+    document.querySelectorAll(".confetti, .ghost").forEach(p => p.remove());
+    toastEl.classList.remove("show");
+    document.querySelectorAll("nav button").forEach(b =>
+      b.setAttribute("aria-pressed", String(+b.dataset.level === n)));
+    stage.innerHTML = "";
+    actionsEl.innerHTML = "";
+    [null, level1, level2, level3][n]();
+  }
+  document.querySelectorAll("nav button").forEach(b =>
+    b.addEventListener("click", () => setLevel(+b.dataset.level)));
+
+  // ----- Level 1: Écoute -----
+  function level1() {
+    instrEl.textContent = "👆 Touche un jour pour l'écouter.";
+    const row = el("div", "row");
+    const heard = new Set();
+    const cards = DAYS.map(d => {
+      const c = dayCard(d);
+      c.setAttribute("aria-label", d.name);
+      c.addEventListener("click", () => {
+        say(d.name);
+        animate(c, "pop");
+        c.classList.add("heard");
+        heard.add(d.i);
+        if (heard.size === DAYS.length) {
+          heard.clear();
+          later(() => good("Bravo ! 🎉"), 900);
+        }
+      });
+      row.appendChild(c);
+      return c;
+    });
+    stage.appendChild(row);
+
+    actionButton("🔊 Écoute tous les jours", () => {
+      clearTimers();
+      cards.forEach((c, i) => later(() => {
+        cards.forEach(x => x.classList.remove("lit"));
+        c.classList.add("lit");
+        say(DAYS[i].name);
+      }, i * 1300));
+      later(() => cards.forEach(x => x.classList.remove("lit")), DAYS.length * 1300);
+    });
+  }
+
+  // ----- Level 2: Mets en ordre -----
+  function level2() {
+    instrEl.textContent = "👆 Touche ou glisse les jours dans l'ordre. Commence par lundi !";
+    actionButton("🔄 Rejouer", () => setLevel(2), "action orange");
+
+    stage.appendChild(el("div", "zone-title", "La semaine :"));
+    const slotsRow = el("div", "row l2 slots");
+    const slots = DAYS.map((d, i) => {
+      const s = el("div", "slot");
+      s.dataset.i = i;
+      s.appendChild(el("span", "num", String(i + 1)));
+      slotsRow.appendChild(s);
+      return s;
+    });
+    stage.appendChild(slotsRow);
+    stage.appendChild(el("div", "zone-title", "Les jours mélangés :"));
+    const pool = el("div", "row l2 pool");
+    stage.appendChild(pool);
+
+    let order;
+    do { order = shuffle(DAYS); } while (order.every((d, i) => d.i === i));
+
+    const firstEmpty = () => slots.find(s => !s.classList.contains("filled"));
+    const markNext = () => {
+      const n = firstEmpty();
+      slots.forEach(s => s.classList.toggle("next", s === n));
+    };
+
+    function tryPlace(card, d, slot) {
+      slot = slot || firstEmpty();
+      if (!slot) return;
+      if (+slot.dataset.i === d.i) {
+        card.remove();
+        const placed = dayCard(d, "div");
+        slot.innerHTML = "";
+        slot.appendChild(placed);
+        slot.classList.add("filled");
+        animate(placed, "pop");
+        say(d.name);
+        good();
+        markNext();
+        if (!firstEmpty()) later(() => showWin("Tu connais l'ordre des jours !"), 1200);
+      } else {
+        animate(card, "wrong");
+        tryAgain();
+      }
+    }
+
+    order.forEach(d => {
+      const c = dayCard(d);
+      c.setAttribute("aria-label", d.name);
+      makeDraggable(c, slot => tryPlace(c, d, slot), () => tryPlace(c, d));
+      pool.appendChild(c);
+    });
+    markNext();
+  }
+
+  function makeDraggable(card, onDrop, onTap) {
+    let pid = null, sx = 0, sy = 0, offX = 0, offY = 0, ghost = null, over = null;
+    card.addEventListener("pointerdown", e => {
+      if (e.button > 0 || pid !== null) return;
+      pid = e.pointerId;
+      sx = e.clientX; sy = e.clientY;
+      try { card.setPointerCapture(pid); } catch (err) {}
+    });
+    card.addEventListener("pointermove", e => {
+      if (e.pointerId !== pid) return;
+      if (!ghost) {
+        if (Math.hypot(e.clientX - sx, e.clientY - sy) < 10) return;
+        const r = card.getBoundingClientRect();
+        ghost = card.cloneNode(true);
+        ghost.classList.add("ghost");
+        ghost.style.width = r.width + "px";
+        ghost.style.height = r.height + "px";
+        offX = sx - r.left; offY = sy - r.top;
+        document.body.appendChild(ghost);
+        card.classList.add("dragging");
+      }
+      ghost.style.left = e.clientX - offX + "px";
+      ghost.style.top = e.clientY - offY + "px";
+      const t = document.elementFromPoint(e.clientX, e.clientY);
+      const s = t && t.closest(".slot:not(.filled)");
+      if (s !== over) {
+        if (over) over.classList.remove("over");
+        over = s;
+        if (over) over.classList.add("over");
+      }
+    });
+    const end = (e, cancelled) => {
+      if (e.pointerId !== pid) return;
+      pid = null;
+      if (ghost) {
+        ghost.remove();
+        ghost = null;
+        card.classList.remove("dragging");
+        const target = over;
+        if (over) over.classList.remove("over");
+        over = null;
+        if (target && !cancelled) onDrop(target);
+      } else if (!cancelled) {
+        onTap();
+      }
+    };
+    card.addEventListener("pointerup", e => end(e, false));
+    card.addEventListener("pointercancel", e => end(e, true));
+    // Keyboard (Enter / Space) fires a click with detail 0
+    card.addEventListener("click", e => { if (e.detail === 0) onTap(); });
+  }
+
+  // ----- Level 3: Quel jour ? -----
+  const TOTAL = 10;
+  function level3() {
+    instrEl.textContent = "👂 Écoute la question et touche la bonne réponse.";
+
+    // All 12 possible questions (no wrap-around), pick 10
+    const all = [];
+    for (let i = 0; i < 6; i++) all.push({ type: "après", ref: DAYS[i], ans: DAYS[i + 1] });
+    for (let i = 1; i < 7; i++) all.push({ type: "avant", ref: DAYS[i], ans: DAYS[i - 1] });
+    const questions = shuffle(all).slice(0, TOTAL);
+    let qi = 0, score = 0, firstTry = true, locked = false;
+
+    const status = el("div", "status");
+    const qCount = el("span");
+    const scoreEl = el("span");
+    status.append(qCount, scoreEl);
+    const qBox = el("div", "question");
+    const answers = el("div", "row answers");
+    stage.append(status, qBox, answers);
+
+    const speakQ = () => {
+      const q = questions[qi];
+      if (q) say(`Quel jour vient ${q.type} ${q.ref.name} ?`);
+    };
+    actionButton("🔊 Répète", speakQ);
+    actionButton("🔄 Rejouer", () => setLevel(3), "action orange");
+
+    function updateStatus() {
+      qCount.textContent = `Question ${Math.min(qi + 1, TOTAL)} / ${TOTAL}`;
+      scoreEl.textContent = `⭐ Score : ${score} / ${TOTAL}`;
+    }
+
+    function showQuestion() {
+      const q = questions[qi];
+      firstTry = true;
+      locked = false;
+      updateStatus();
+
+      qBox.innerHTML = "";
+      const text = el("div", "text");
+      text.append("Quel jour vient ", el("b", null, q.type), " ", chip(q.ref), "\u00a0?");
+      const strip = el("div", "strip");
+      const mystery = el("div", "mystery", "?");
+      const refCard = dayCard(q.ref, "div");
+      if (q.type === "après") strip.append(refCard, el("span", "arrow", "➡️"), mystery);
+      else strip.append(mystery, el("span", "arrow", "➡️"), refCard);
+      qBox.append(text, strip);
+
+      // Answer choices: the right one, the day in the question, and one more
+      const opts = [q.ans, q.ref];
+      const other = DAYS[q.type === "après" ? q.ref.i - 1 : q.ref.i + 1];
+      if (other && !opts.includes(other)) opts.push(other);
+      while (opts.length < 3) {
+        const r = DAYS[Math.floor(Math.random() * DAYS.length)];
+        if (!opts.includes(r)) opts.push(r);
+      }
+
+      answers.innerHTML = "";
+      shuffle(opts).forEach(d => {
+        const b = dayCard(d);
+        b.setAttribute("aria-label", d.name);
+        b.addEventListener("click", () => {
+          if (locked) return;
+          if (d === q.ans) {
+            locked = true;
+            if (firstTry) score++;
+            updateStatus();
+            b.classList.add("yes");
+            const filled = dayCard(d, "div");
+            mystery.replaceWith(filled);
+            animate(filled, "pop");
+            good("Bravo ! 🎉");
+            say("Bravo ! " + d.name);
+            later(() => {
+              qi++;
+              if (qi < TOTAL) { showQuestion(); speakQ(); }
+              else finish();
+            }, 1800);
+          } else {
+            firstTry = false;
+            b.classList.add("no");
+            animate(b, "wrong");
+            tryAgain();
+          }
+        });
+        answers.appendChild(b);
+      });
+    }
+
+    function finish() {
+      const stars = score >= 9 ? "⭐⭐⭐" : score >= 6 ? "⭐⭐" : "⭐";
+      showWin(`Score : ${score} / ${TOTAL}`, stars, `Tu as ${score} sur ${TOTAL}.`);
+    }
+
+    showQuestion();
+    speakQ();
+  }
+
+  // ---------- Bravo screen ----------
+  function showWin(msg, stars = "⭐🌈⭐", spoken = msg) {
+    document.getElementById("bravoMsg").textContent = msg;
+    document.getElementById("stars").textContent = stars;
+    document.getElementById("next").style.display = level < 3 ? "" : "none";
+    bravoEl.classList.add("show");
+    playSound("win");
+    later(() => say("Bravo ! " + spoken), 600);
+    confetti();
+  }
+  function confetti() {
+    for (let i = 0; i < 80; i++) {
+      const p = el("div", "confetti");
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.background = DAYS[i % DAYS.length].color;
+      p.style.animationDuration = 2 + Math.random() * 2 + "s";
+      p.style.animationDelay = Math.random() * 0.8 + "s";
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 5000);
+    }
+  }
+  document.getElementById("replay").addEventListener("click", () => setLevel(level));
+  document.getElementById("next").addEventListener("click", () => setLevel(level + 1));
+
+  setLevel(1);
+</script>
+</body>
+</html>
