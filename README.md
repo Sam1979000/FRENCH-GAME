@@ -6,6 +6,23 @@ When all 8 pairs are matched, a happy sound plays and "Bravo !" appears, with a 
 
 It works on phones, tablets and classroom smartboards. It needs no internet connection after the page has loaded.
 
+# Les contraires – French opposites game
+
+A second game in `contraires.html`, for the exercise "Écrivez le contraire" (haut, lourde, madame, fille,
+grande, épais, grosse, large, longue, beau). It has two modes, chosen with the buttons at the top:
+
+- **🔗 Relie** – tap a word, then its opposite (haut ↔ bas, lourde ↔ légère, madame ↔ monsieur,
+  fille ↔ garçon, grande ↔ petite, épais ↔ mince, grosse ↔ maigre, large ↔ étroit, longue ↔ courte,
+  beau ↔ laid). Each word is read aloud.
+- **✏️ Écris** – the child types the opposite, one word at a time, with buttons for é è ê à ç ô.
+  After a wrong try they get a hint (the first letter); after a second wrong try the answer is shown.
+  A missing accent still counts, with a reminder of the correct spelling. At the end it shows the
+  score out of 10 and a list of all the answers.
+
+Other accepted answers: épais → fin, grosse → mince, large → étroite, beau → moche.
+
+Link (after GitHub Pages is on): **https://sam1979000.github.io/FRENCH-GAME/contraires.html**
+
 ## Open the game from a link (GitHub Pages)
 
 1. On GitHub, open this repository and make sure `index.html` is on the **main** branch
